@@ -2,7 +2,7 @@ import pygame as pg
 
 # Инициализация pg
 pg.init()
-
+print("21312312312312")
 # Размеры окна
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 550
@@ -61,6 +61,56 @@ class Button:
                 self.func()
         elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
             self.is_pressed = False
+class Item:
+    def __init__(self, name, price, file):
+        self.price = price
+        self.name = name
+        self.is_bought = False
+        self.is_using = False
+        self.image = load1(file, 310 // 1.7, 500 // 1.7)
+        self.full_image = load1(file, 310, 500)
+class Cmenu:
+    def __init__(self, game):
+        self.game = game
+        self.menu = load1("images/menu/menu_page.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.botton_label_off = load1("images/menu/bottom_label_off.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.botton_label_on = load1("images/menu/bottom_label_on.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.top_label_off = load1("images/menu/top_label_off.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.top_label_on = load1("images/menu/top_label_on.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+
+        self.items =[Item("Cиния футболка", 10, "images/items/blue t-shirt.png"),
+                     Item("Ботинки", 50, "images/items/boots.png")
+
+
+        ]
+        self.current_item = 0
+        self.item_rect = self.items[0].image.get_rect()
+        self.item_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        self.next_button = Button("Вперёд", SCREEN_WIDTH - 90 - SCREEN_WIDTH, SCREEN_HEIGHT - 130,
+                                  width=int(BUTTON_WIDTH // 1.2), height=int(BUTTON_HEIGHT // 1.2),
+                                  func=self.to_next)
+
+        def draw(self, screen):
+            screen.blit(self.menu_page, (0, 0))
+            screen.blit(self.items[self.current_item].image, self.item_rect)
+            if self.items[self.current_item].is_bought:
+                screen.blit(self.botton_label_on, (0, 0))
+            else:
+                screen.blit(self.botton_label_off, (0, 0))
+            if self.items[self.current_item].is_using:
+                screen.blit(self.top_label_on, (0, 0))
+            else:
+                screen.blit(self.top_label_off, (0, 0))
+
+        def to_next(self):
+            if self.current_item != len(self.items) - 1:
+                self.current_item += 1
+
+        def update(self):
+            self.next_button.update()
+
+        def is_clcked(self, event):
+            self.next_button.is_clcked(event)
 
 
 class Game:
@@ -77,17 +127,23 @@ class Game:
         self.satiety = 100
         self.health = 100
         self.money = 10
+        self.mode = "Main"
         self.coins_per_second = 1
+
         self.costs_of_upgrade = {100: False, 1000: False, 5000: False, 10000: False}
         self.button_x = SCREEN_WIDTH - pad - BUTTON_WIDTH
-        self.eat = Button("Поесть", self.button_x, 100, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, func=self.food_menu_on)
-        self.clouth = Button("Одежда", self.button_x, 175, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, func=self.clouth_menu_on)
-        self.play = Button("Игры", self.button_x, 250, width=BUTTON_WIDTH, height=BUTTON_HEIGHT, func=self.game_menu_on)
+        self.eat = Button("Поесть", self.button_x, 100, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
+                          func=self.food_menu_on)
+        self.clouth = Button("Одежда", self.button_x, 175, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
+                             func=self.clouth_menu_on)
+        self.play = Button("Игры", self.button_x, 250, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
+                           func=self.game_menu_on)
         self.upgrade_button = Button("Улучшить", self.button_x + 130, 3,
                                      width=BUTTON_WIDTH // 3, height=BUTTON_HEIGHT // 3,
                                      text_font=mini_font,
                                      func=self.increase_money)
-
+        self.buttons = [self.upgrade_button, self.play, self.clouth, self.eat]
+        self.clouthes_menu = Cmenu(self)
         self.INCREASE_COINS = pg.USEREVENT + 1
         pg.time.set_timer(self.INCREASE_COINS, 1000)
         self.run()
@@ -108,28 +164,33 @@ class Game:
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
-            if event.type == self.INCREASE_COINS:
-                self.money += self.coins_per_second
+            if event.type == pg.KEYDOWN:
+                if event.type == self.INCREASE_COINS:
+                    self.money += self.coins_per_second
             self.eat.is_clck(event)
             self.clouth.is_clck(event)
             self.play.is_clck(event)
             self.upgrade_button.is_clck(event)
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.money += 1
-
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    self.mode = "Main"
+            for button in self.buttons:
+                button.is_clck(event)
     def increase_money(self):
-        for key, value in self.costs_of_upgrade.items():
-            if self.costs_of_upgrade[key] == False and self.costs_of_upgrade[key] == self.money:
-                self.costs_of_upgrade[key] = True
+        for cost, check in self.costs_of_upgrade.items():
+            if check == False and cost <= self.money:
+                self.costs_of_upgrade[cost] = True
                 self.coins_per_second += 1
-                self.money -= self.costs_of_upgrade[key]
+                self.money -= cost
 
     def update(self):
         self.eat.update()
         self.clouth.update()
         self.play.update()
         self.upgrade_button.update()
-
+        self.clouthes_menu.update()
     def draw(self):
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.happines_image, (pad, pad))
@@ -151,7 +212,8 @@ class Game:
         self.screen.blit(text_render("Игры"), (self.button_x + 65, 270))
         self.screen.blit(text_render1("улучшить"), (self.button_x + 140, 7))
         pg.display.flip()
-
+        if self.mode == "Clouth menu":
+            self.clouthes_menu.draw(self.screen)
 
 if __name__ == "__main__":
     Game()
