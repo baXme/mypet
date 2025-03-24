@@ -91,7 +91,7 @@ class Cmenu:
                                   func=self.to_next)
 
     def draw(self, screen):
-        screen.blit(self.menu_page, (0, 0))
+        screen.blit(self.menu, (0, 0))
         screen.blit(self.items[self.current_item].image, self.item_rect)
         if self.items[self.current_item].is_bought:
             screen.blit(self.botton_label_on, (0, 0))
@@ -109,8 +109,8 @@ class Cmenu:
     def update(self):
         self.next_button.update()
 
-    def is_clcked(self, event):
-        self.next_button.is_clcked(event)
+    def is_clck(self, event):
+        self.next_button.is_clck(event)
 
 
 class Game:
@@ -171,13 +171,15 @@ class Game:
             self.clouth.is_clck(event)
             self.play.is_clck(event)
             self.upgrade_button.is_clck(event)
+            for button in self.buttons:
+                button.is_clck(event)
+                self.clouthes_menu.is_clck(event)
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.money += 1
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.mode = "Main"
-            for button in self.buttons:
-                button.is_clck(event)
+
     def increase_money(self):
         for cost, check in self.costs_of_upgrade.items():
             if check == False and cost <= self.money:
@@ -212,6 +214,8 @@ class Game:
         self.screen.blit(text_render("Игры"), (self.button_x + 65, 270))
         self.screen.blit(text_render1("улучшить"), (self.button_x + 140, 7))
         pg.display.flip()
+        for button in self.buttons:
+            button.draw(self.screen)
         if self.mode == "Clouth menu":
             self.clouthes_menu.draw(self.screen)
 
