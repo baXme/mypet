@@ -90,27 +90,27 @@ class Cmenu:
                                   width=int(BUTTON_WIDTH // 1.2), height=int(BUTTON_HEIGHT // 1.2),
                                   func=self.to_next)
 
-        def draw(self, screen):
-            screen.blit(self.menu_page, (0, 0))
-            screen.blit(self.items[self.current_item].image, self.item_rect)
-            if self.items[self.current_item].is_bought:
-                screen.blit(self.botton_label_on, (0, 0))
-            else:
-                screen.blit(self.botton_label_off, (0, 0))
-            if self.items[self.current_item].is_using:
-                screen.blit(self.top_label_on, (0, 0))
-            else:
-                screen.blit(self.top_label_off, (0, 0))
+    def draw(self, screen):
+        screen.blit(self.menu_page, (0, 0))
+        screen.blit(self.items[self.current_item].image, self.item_rect)
+        if self.items[self.current_item].is_bought:
+            screen.blit(self.botton_label_on, (0, 0))
+        else:
+            screen.blit(self.botton_label_off, (0, 0))
+        if self.items[self.current_item].is_using:
+            screen.blit(self.top_label_on, (0, 0))
+        else:
+            screen.blit(self.top_label_off, (0, 0))
 
-        def to_next(self):
-            if self.current_item != len(self.items) - 1:
-                self.current_item += 1
+    def to_next(self):
+        if self.current_item != len(self.items) - 1:
+            self.current_item += 1
 
-        def update(self):
-            self.next_button.update()
+    def update(self):
+        self.next_button.update()
 
-        def is_clcked(self, event):
-            self.next_button.is_clcked(event)
+    def is_clcked(self, event):
+        self.next_button.is_clcked(event)
 
 
 class Game:
