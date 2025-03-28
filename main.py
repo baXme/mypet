@@ -2,7 +2,7 @@ import pygame as pg
 
 # Инициализация pg
 pg.init()
-print("21312312312312")
+
 # Размеры окна
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 550
@@ -109,6 +109,7 @@ class Cmenu:
     def update(self):
         self.next_button.update()
 
+
     def is_clck(self, event):
         self.next_button.is_clck(event)
 
@@ -128,6 +129,7 @@ class Game:
         self.health = 100
         self.money = 10
         self.mode = "Main"
+        print(self.mode)
         self.coins_per_second = 1
 
         self.costs_of_upgrade = {100: False, 1000: False, 5000: False, 10000: False}
@@ -152,7 +154,7 @@ class Game:
     def game_menu_on(self):
         self.mode = "Game menu"
     def clouth_menu_on(self):
-        self.mode = "Clouth menu"
+        self.mode = "Clouth_menu"
     def run(self):
         while True:
             self.event()
@@ -173,7 +175,7 @@ class Game:
             self.upgrade_button.is_clck(event)
             for button in self.buttons:
                 button.is_clck(event)
-                self.clouthes_menu.is_clck(event)
+            self.clouthes_menu.is_clck(event)
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.money += 1
             if event.type == pg.KEYDOWN:
@@ -194,6 +196,10 @@ class Game:
         self.upgrade_button.update()
         self.clouthes_menu.update()
     def draw(self):
+        for button in self.buttons:
+            button.draw(self.screen)
+        if self.mode == "Clouth_menu":
+            self.clouthes_menu.draw(self.screen)
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.happines_image, (pad, pad))
         self.screen.blit(self.dog_image, (275, 100))
@@ -209,15 +215,15 @@ class Game:
         self.clouth.draw(self.screen)
         self.play.draw(self.screen)
         self.upgrade_button.draw(self.screen)
+
+        for button in self.buttons:
+            button.draw(self.screen)
+        if self.mode == "Clouth_menu":
+            self.clouthes_menu.draw(self.screen)
         self.screen.blit(text_render("Поесть"), (self.button_x + 55, 120))
         self.screen.blit(text_render("Одежда"), (self.button_x + 44, 195))
         self.screen.blit(text_render("Игры"), (self.button_x + 65, 270))
         self.screen.blit(text_render1("улучшить"), (self.button_x + 140, 7))
         pg.display.flip()
-        for button in self.buttons:
-            button.draw(self.screen)
-        if self.mode == "Clouth menu":
-            self.clouthes_menu.draw(self.screen)
-
 if __name__ == "__main__":
     Game()
