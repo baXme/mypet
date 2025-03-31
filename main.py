@@ -216,10 +216,7 @@ class Game:
         self.play.draw(self.screen)
         self.upgrade_button.draw(self.screen)
 
-        for button in self.buttons:
-            button.draw(self.screen)
-        if self.mode == "Clouth_menu":
-            self.clouthes_menu.draw(self.screen)
+
         self.screen.blit(text_render("Поесть"), (self.button_x + 55, 120))
         self.screen.blit(text_render("Одежда"), (self.button_x + 44, 195))
         self.screen.blit(text_render("Игры"), (self.button_x + 65, 270))
