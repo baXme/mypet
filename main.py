@@ -270,6 +270,7 @@ class Game:
             for button in self.buttons:
                 button.is_clck(event)
             self.clouthes_menu.is_clck(event)
+            self.food_menu.is_clck(event)
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.money += 1
             if event.type == pg.KEYDOWN:
