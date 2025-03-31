@@ -139,7 +139,75 @@ class Cmenu:
         self.use_button.is_clck(event)
         self.end_button.is_clck(event)
 
+class Food:
+    def __init__(self, name, file, satiety, price, medicene=0):
+        self.name = name
+        self.satiety = satiety
+        self.price = price
+        self.medicene = medicene
+        self.image = load1(file, 200, 200)
+class Fmenu:
+    def __init__(self, game):
+        self.game = game
+        self.menu = load1("images/menu/menu_page.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.botton_label_off = load1("images/menu/bottom_label_off.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.botton_label_on = load1("images/menu/bottom_label_on.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.top_label_off = load1("images/menu/top_label_off.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.top_label_on = load1("images/menu/top_label_on.png", SCREEN_WIDTH, SCREEN_HEIGHT)
 
+        self.items =[Food("Мясо", "images/food/dog food.png", 10, 10),
+                     Food("Корм", "images/food/meat.png", 15, 20),
+                     Food("Элит", "images/food/dog food elite.png", 15, 40, medicene=40),
+                     Food("Элит", "images/food/medicine.png", 0, 50, medicene=40)
+
+
+        ]
+        self.current_item = 0
+        self.item_rect = self.items[0].image.get_rect()
+        self.item_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        self.next_button = Button("Вперёд", 125, 425,
+                                  width=int(BUTTON_WIDTH // 2), height=int(BUTTON_HEIGHT // 2),
+                                  func=self.to_next)
+        self.end_button = Button("назад", 675, 425,
+                                  width=int(BUTTON_WIDTH // 2), height=int(BUTTON_HEIGHT // 2),
+                                  func=self.to_end)
+
+        self.eat_button = Button("Сьесть", 400, 375,
+                                  width=int(BUTTON_WIDTH // 2), height=int(BUTTON_HEIGHT // 2),
+                                  func=self.buy)
+
+    def draw(self, screen):
+        screen.blit(self.menu, (0, 0))
+        screen.blit(self.items[self.current_item].image, self.item_rect)
+
+
+    def to_next(self):
+        if self.current_item != len(self.items) - 1:
+            self.current_item += 1
+    def to_end(self):
+        if self.current_item != len(self.items) + 1:
+            self.current_item -= 1
+    def buy (self):
+        if self.game.money >= self.items[self.current_item].price:
+            self.game.money -= self.items[self.current_item].price
+            self.game.satiety += self.items[self.current_item].satiety
+            if self.game.satiety > 100:
+                self.game.satiety = 100
+            self.game.health += self.items[self.current_item].medicene
+            if self.game.health > 100:
+                self.game.health = 100
+
+
+    def update(self):
+        self.next_button.update()
+        self.end_button.update()
+        self.eat_button.update()
+
+
+    def is_clck(self, event):
+        self.next_button.is_clck(event)
+        self.eat_button.is_clck(event)
+        self.end_button.is_clck(event)
 class Game:
     def __init__(self):
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -171,6 +239,7 @@ class Game:
                                      text_font=mini_font,
                                      func=self.increase_money)
         self.clouthes_menu = Cmenu(self)
+        self.food_menu = Fmenu(self)
         self.buttons = [self.upgrade_button, self.play, self.clouth, self.eat]
         self.INCREASE_COINS = pg.USEREVENT + 1
         pg.time.set_timer(self.INCREASE_COINS, 1000)
@@ -220,11 +289,14 @@ class Game:
         self.play.update()
         self.upgrade_button.update()
         self.clouthes_menu.update()
+        self.food_menu.update()
     def draw(self):
         for button in self.buttons:
             button.draw(self.screen)
         if self.mode == "Clouth_menu":
             self.clouthes_menu.draw(self.screen)
+        if self.mode == "Food menu":
+            self.food_menu.draw(self.screen)
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.happines_image, (pad, pad))
         self.screen.blit(self.dog_image, (275, 100))
@@ -252,6 +324,13 @@ class Game:
             self.clouthes_menu.use_button.draw(self.screen)
             self.clouthes_menu.buy_button.draw(self.screen)
             self.clouthes_menu.end_button.draw(self.screen)
+        if self.mode == "Food menu":
+            self.food_menu.draw(self.screen)
+            self.food_menu.next_button.draw(self.screen)
+            self.food_menu.eat_button.draw(self.screen)
+            self.food_menu.end_button.draw(self.screen)
+
+
 
         pg.display.flip()
 if __name__ == "__main__":
