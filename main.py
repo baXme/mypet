@@ -1,3 +1,5 @@
+import random
+
 import pygame as pg
 
 # Инициализация pg
@@ -208,6 +210,37 @@ class Fmenu:
         self.next_button.is_clck(event)
         self.eat_button.is_clck(event)
         self.end_button.is_clck(event)
+class Toy(pg.sprite.Sprite):
+    def __init__(self):
+        pg.sprite.Sprite.__init__(self)
+class Dog(pg.sprite.Sprite):
+    def __init__(self):
+        pg.sprite.Sprite.__init__(self)
+class Mini_game:
+    def __init__(self, game):
+        self.game = game
+        self.background = load1("images/game_background.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.dog_image = load1("images/dog.png", 100, 100)
+        self.dog = Dog()
+        self.toys = pg.sprite.Group()
+        self.score = 0
+        self.start_time = pg.time.get_ticks()
+        self.interval = 1000 * 5
+    def new_game(self):
+        self.background = load1("images/game_background.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.dog = Dog()
+        self.toys = pg.sprite.Group()
+        self.score = 0
+        self.start_time = pg.time.get_ticks()
+        self.interval = 1000 * 5
+
+    def update(self):
+        ...
+    def draw(self, screen):
+        screen.blit(self.background, (0, 0))
+
+        screen.blit(text_render(self.score), (30, 80))
+        self.toys.draw(screen)
 class Game:
     def __init__(self):
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -233,21 +266,25 @@ class Game:
         self.clouth = Button("Одежда", self.button_x, 175, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
                              func=self.clouth_menu_on)
         self.play = Button("Игры", self.button_x, 250, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
-                           func=self.game_menu_on)
+                           func=self.game_on())
         self.upgrade_button = Button("Улучшить", self.button_x + 130, 3,
                                      width=BUTTON_WIDTH // 3, height=BUTTON_HEIGHT // 3,
                                      text_font=mini_font,
                                      func=self.increase_money)
+        self.mini_game = Mini_game(self)
         self.clouthes_menu = Cmenu(self)
         self.food_menu = Fmenu(self)
         self.buttons = [self.upgrade_button, self.play, self.clouth, self.eat]
         self.INCREASE_COINS = pg.USEREVENT + 1
         pg.time.set_timer(self.INCREASE_COINS, 1000)
+        self.DECRIASE = pg.USEREVENT + 1
+        pg.time.set_timer(self.DECRIASE, 500)
         self.run()
     def food_menu_on(self):
         self.mode = "Food menu"
-    def game_menu_on(self):
-        self.mode = "Game menu"
+    def game_on(self):
+        self.mode = "Mini game"
+        self.mini_game.new_game()
     def clouth_menu_on(self):
         self.mode = "Clouth_menu"
     def run(self):
@@ -263,6 +300,14 @@ class Game:
                 exit()
             if event.type == self.INCREASE_COINS:
                 self.money += self.coins_per_second
+            if event.type == self.DECRIASE:
+                chance = random.randint(1, 10)
+                if chance <= 5:
+                    self.satiety -= 1
+                elif 5 < chance <= 9:
+                    self.happines -= 1
+                else:
+                    self.health -= 1
             self.eat.is_clck(event)
             self.clouth.is_clck(event)
             self.play.is_clck(event)
@@ -291,6 +336,7 @@ class Game:
         self.upgrade_button.update()
         self.clouthes_menu.update()
         self.food_menu.update()
+
     def draw(self):
         for button in self.buttons:
             button.draw(self.screen)
@@ -298,6 +344,7 @@ class Game:
             self.clouthes_menu.draw(self.screen)
         if self.mode == "Food menu":
             self.food_menu.draw(self.screen)
+
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.happines_image, (pad, pad))
         self.screen.blit(self.dog_image, (275, 100))
@@ -330,6 +377,9 @@ class Game:
             self.food_menu.next_button.draw(self.screen)
             self.food_menu.eat_button.draw(self.screen)
             self.food_menu.end_button.draw(self.screen)
+        if self.mode == "Mini game":
+            self.mini_game.draw(self.screen)
+
 
 
 
