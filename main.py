@@ -258,6 +258,7 @@ class Game:
         self.mode = "Main"
         print(self.mode)
         self.coins_per_second = 1
+        self.mini_game = Mini_game(self)
 
         self.costs_of_upgrade = {100: False, 1000: False, 5000: False, 10000: False}
         self.button_x = SCREEN_WIDTH - pad - BUTTON_WIDTH
@@ -271,9 +272,9 @@ class Game:
                                      width=BUTTON_WIDTH // 3, height=BUTTON_HEIGHT // 3,
                                      text_font=mini_font,
                                      func=self.increase_money)
-        self.mini_game = Mini_game(self)
         self.clouthes_menu = Cmenu(self)
         self.food_menu = Fmenu(self)
+
         self.buttons = [self.upgrade_button, self.play, self.clouth, self.eat]
         self.INCREASE_COINS = pg.USEREVENT + 1
         pg.time.set_timer(self.INCREASE_COINS, 1000)
@@ -336,7 +337,7 @@ class Game:
         self.upgrade_button.update()
         self.clouthes_menu.update()
         self.food_menu.update()
-
+        self.mini_game.update()
     def draw(self):
         for button in self.buttons:
             button.draw(self.screen)
@@ -344,7 +345,6 @@ class Game:
             self.clouthes_menu.draw(self.screen)
         if self.mode == "Food menu":
             self.food_menu.draw(self.screen)
-
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.happines_image, (pad, pad))
         self.screen.blit(self.dog_image, (275, 100))
