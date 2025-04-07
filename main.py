@@ -266,6 +266,8 @@ class Game:
         print(self.mode)
         self.coins_per_second = 1
         self.mini_game = Mini_game(self)
+        self.fps = 100
+        self.clock = pg.time.Clock()
 
         self.costs_of_upgrade = {100: False, 1000: False, 5000: False, 10000: False}
         self.button_x = SCREEN_WIDTH - pad - BUTTON_WIDTH
@@ -306,11 +308,11 @@ class Game:
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_a:
-                    self.mini_game.dog_rect.x += 1
-                if event.key == pg.K_d:
-                    self.mini_game.dog_rect.x -= 1
+            self.keys = pg.key.get_pressed()
+            if self.keys[pg.K_a]:
+                self.mini_game.dog_rect.x -= 10
+            if self.keys[pg.K_d]:
+                self.mini_game.dog_rect.x += 10
 
             if event.type == self.INCREASE_COINS:
                 self.money += self.coins_per_second
@@ -398,5 +400,6 @@ class Game:
 
 
         pg.display.flip()
+
 if __name__ == "__main__":
     Game()
