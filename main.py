@@ -213,6 +213,28 @@ class Fmenu:
 class Toy(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
+        self.dog = Dog
+        self.ball = load1("images/toys/ball.png", (100, 100))
+        self.bone1 = load1("images/toys/blue bone.png", (100, 100))
+        self.bone2 = load1("images/toys/red bone.png", (100, 100))
+        self.mini = Mini_game
+        self.image = None
+        if self.pic == 1:
+            self.image = self.ball
+        elif self.pic ==2:
+            self.image = self.bone1
+        elif self.pic == 3:
+            self.image = self.bone2
+        self.image.rect.x = random.randint(0, 3) * SCREEN_WIDTH // 20  # создаём плитку на случайной дорожке
+        self.image.rect.y = SCREEN_HEIGHT
+    def update(self):
+        self.image.rect.y += 1
+        self.pic = random.randint(1, 3)
+        pos = self.dog.get_pos()
+        if self.rect.collidepoint(pos):
+            s
+        if self.rect.y >= SCREEN_HEIGHT:
+            self.kill()
 class Dog(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
@@ -256,7 +278,7 @@ class Mini_game:
     def draw(self, screen):
         screen.blit(self.background, (0, 0))
 
-        screen.blit(text_render(self.score), (50, 100))
+        screen.blit(text_render(self.score), (105, 90))
         screen.blit(self.dog.image, self.dog.dog_rect)
         self.toys.draw(screen)
 class Game:
