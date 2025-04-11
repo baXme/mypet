@@ -216,14 +216,22 @@ class Toy(pg.sprite.Sprite):
 class Dog(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
+        self.image = load1("images/dog.png", 100, 100)
+        self.dog_rect = self.image.get_rect()
+    def update(self):
+        self.keys = pg.key.get_pressed()
+        if self.keys[pg.K_a]:
+            self.dog_rect.x -= 1
+        if self.keys[pg.K_d]:
+            self.dog_rect.x += 1
 
 
 class Mini_game:
     def __init__(self, game):
         self.game = game
-        self.background = load1("images/game_background.png", SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.dog_image = load1("images/dog.png", 100, 100)
         self.dog = Dog()
+        self.background = load1("images/game_background.png", SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.dog_image = self.dog.image
         self.toys = pg.sprite.Group()
         self.score = 0
         self.start_time = pg.time.get_ticks()
@@ -236,17 +244,18 @@ class Mini_game:
         self.score = 0
         self.start_time = pg.time.get_ticks()
         self.interval = 1000 * 5
-        self.dog_rect = self.dog_image.get_rect()
+
 
 
     def update(self):
         self.dog.update()
 
+
     def draw(self, screen):
         screen.blit(self.background, (0, 0))
 
         screen.blit(text_render(self.score), (50, 100))
-        screen.blit(self.dog_image, self.dog_rect)
+        screen.blit(self.dog.image, self.dog.dog_rect,)
         self.toys.draw(screen)
 class Game:
     def __init__(self):
@@ -308,11 +317,6 @@ class Game:
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
-            self.keys = pg.key.get_pressed()
-            if self.keys[pg.K_a]:
-                self.mini_game.dog_rect.x -= 10
-            if self.keys[pg.K_d]:
-                self.mini_game.dog_rect.x += 10
 
             if event.type == self.INCREASE_COINS:
                 self.money += self.coins_per_second
@@ -354,6 +358,7 @@ class Game:
         self.clouthes_menu.update()
         self.food_menu.update()
         self.mini_game.update()
+
     def draw(self):
         for button in self.buttons:
             button.draw(self.screen)
