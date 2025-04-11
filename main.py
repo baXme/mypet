@@ -216,8 +216,10 @@ class Toy(pg.sprite.Sprite):
 class Dog(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
-        self.image = load1("images/dog.png", 100, 100)
+        self.image = load1("images/dog.png",310 // 2, 500 //2)
         self.dog_rect = self.image.get_rect()
+        self.dog_rect.centerx = 450
+        self.dog_rect.centery = 550 - 140
     def update(self):
         self.keys = pg.key.get_pressed()
         if self.keys[pg.K_a]:
@@ -238,7 +240,7 @@ class Mini_game:
         self.interval = 1000 * 5
     def new_game(self):
         self.background = load1("images/game_background.png", SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.dog_image = load1("images/dog.png", 100, 100)
+        self.dog_image = load1("images/dog.png", 310 // 2, 500 //2)
         self.dog = Dog()
         self.toys = pg.sprite.Group()
         self.score = 0
@@ -255,7 +257,7 @@ class Mini_game:
         screen.blit(self.background, (0, 0))
 
         screen.blit(text_render(self.score), (50, 100))
-        screen.blit(self.dog.image, self.dog.dog_rect,)
+        screen.blit(self.dog.image, self.dog.dog_rect)
         self.toys.draw(screen)
 class Game:
     def __init__(self):
