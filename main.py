@@ -214,11 +214,12 @@ class Toy(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
         self.dog = Dog
-        self.ball = load1("images/toys/ball.png", (100, 100))
-        self.bone1 = load1("images/toys/blue bone.png", (100, 100))
-        self.bone2 = load1("images/toys/red bone.png", (100, 100))
+        self.ball = load1("images/toys/ball.png", 100, 100)
+        self.bone1 = load1("images/toys/blue bone.png", 100, 100)
+        self.bone2 = load1("images/toys/red bone.png", 100, 100)
         self.mini = Mini_game
         self.image = None
+        self.pic = random.randint(1,3)
         if self.pic == 1:
             self.image = self.ball
         elif self.pic == 2:
@@ -228,7 +229,7 @@ class Toy(pg.sprite.Sprite):
         self.image.x = random.randint(0, 3) * SCREEN_WIDTH // 20
         self.image.y = SCREEN_HEIGHT
     def update(self):
-        self.image.y += 2
+        self.image.y += 1
 class Dog(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
@@ -269,7 +270,7 @@ class Mini_game:
         self.dog.update()
         self.toys.update()
         if random.randint(0, 100) == 0:
-            self.toys.add(Toy)
+            self.toys.add(Toy())
         hits = pg.sprite.spritecollide(self.dog, self.toys, True, pg.sprite.collide_rect_ratio(0.6))
         self.score += len(hits)
         if pg.time.get_ticks() - self.start_time > self.interval:
