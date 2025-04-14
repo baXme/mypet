@@ -228,7 +228,7 @@ class Toy(pg.sprite.Sprite):
         self.image.x = random.randint(0, 3) * SCREEN_WIDTH // 20
         self.image.y = SCREEN_HEIGHT
     def update(self):
-        self.image.y += 1
+        self.image.y += 2
 class Dog(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
