@@ -14,6 +14,7 @@ icon_size = 80
 pad = 5
 font = pg.font.Font(None, 40)
 mini_font = pg.font.Font(None, 15)
+fps = 600
 
 
 def load1(file, width, hidth):
@@ -226,10 +227,14 @@ class Toy(pg.sprite.Sprite):
             self.image = self.bone1
         elif self.pic == 3:
             self.image = self.bone2
-        self.image.x = random.randint(0, 3) * SCREEN_WIDTH // 20
-        self.image.y = SCREEN_HEIGHT
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(0, 10) * SCREEN_WIDTH // 20
+        self.rect.y = 30
+
     def update(self):
-        self.image.y += 1
+        self.rect.y += 1
+        if self.rect.y >= SCREEN_HEIGHT:
+            self.kill()
 class Dog(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
@@ -262,14 +267,14 @@ class Mini_game:
         self.toys = pg.sprite.Group()
         self.score = 0
         self.start_time = pg.time.get_ticks()
-        self.interval = 1000 * 5
+        self.interval = 1000 * 15
 
 
 
     def update(self):
         self.dog.update()
         self.toys.update()
-        if random.randint(0, 100) == 0:
+        if random.randint(0, 1000) == 0:
             self.toys.add(Toy())
         hits = pg.sprite.spritecollide(self.dog, self.toys, True, pg.sprite.collide_rect_ratio(0.6))
         self.score += len(hits)
@@ -281,12 +286,13 @@ class Mini_game:
         screen.blit(self.background, (0, 0))
 
         screen.blit(text_render(self.score), (105, 90))
-        screen.blit(self.dog.image, self.dog.dog_rect)
+        screen.blit(self.dog.image, self.dog.rect)
         self.toys.draw(screen)
 class Game:
     def __init__(self):
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pg.display.set_caption("Виртуальный питомец")
+        self.clock = pg.time.Clock()
         self.background = load1("images/background.png", SCREEN_WIDTH, SCREEN_HEIGHT)
         self.happines_image = load1("images/happiness.png", icon_size, icon_size)
         self.dog_image = load1("images/dog.png", 310, 500)
@@ -337,6 +343,7 @@ class Game:
             self.event()
             self.update()
             self.draw()
+            self.clock.tick(fps)
 
     def event(self):
         for event in pg.event.get():
