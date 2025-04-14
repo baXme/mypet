@@ -221,33 +221,27 @@ class Toy(pg.sprite.Sprite):
         self.image = None
         if self.pic == 1:
             self.image = self.ball
-        elif self.pic ==2:
+        elif self.pic == 2:
             self.image = self.bone1
         elif self.pic == 3:
             self.image = self.bone2
-        self.image.rect.x = random.randint(0, 3) * SCREEN_WIDTH // 20  # создаём плитку на случайной дорожке
-        self.image.rect.y = SCREEN_HEIGHT
+        self.image.x = random.randint(0, 3) * SCREEN_WIDTH // 20
+        self.image.y = SCREEN_HEIGHT
     def update(self):
-        self.image.rect.y += 1
-        self.pic = random.randint(1, 3)
-        pos = self.dog.get_pos()
-        if self.rect.collidepoint(pos):
-            s
-        if self.rect.y >= SCREEN_HEIGHT:
-            self.kill()
+        self.image.y += 1
 class Dog(pg.sprite.Sprite):
     def __init__(self):
         pg.sprite.Sprite.__init__(self)
         self.image = load1("images/dog.png",310 // 2, 500 //2)
-        self.dog_rect = self.image.get_rect()
-        self.dog_rect.centerx = 450
-        self.dog_rect.centery = 550 - 140
+        self.rect = self.image.get_rect()
+        self.rect.centerx = 450
+        self.rect.centery = 550 - 140
     def update(self):
         self.keys = pg.key.get_pressed()
         if self.keys[pg.K_a]:
-            self.dog_rect.x -= 1
+            self.rect.x -= 1
         if self.keys[pg.K_d]:
-            self.dog_rect.x += 1
+            self.rect.x += 1
 
 
 class Mini_game:
@@ -273,7 +267,14 @@ class Mini_game:
 
     def update(self):
         self.dog.update()
-
+        self.toys.update()
+        if random.randint(0, 100) == 0:
+            self.toys.add(Toy)
+        hits = pg.sprite.spritecollide(self.dog, self.toys, True, pg.sprite.collide_rect_ratio(0.6))
+        self.score += len(hits)
+        if pg.time.get_ticks() - self.start_time > self.interval:
+            self.game.happines += int(self.score // 2)
+            self.game.mode = "Main"
 
     def draw(self, screen):
         screen.blit(self.background, (0, 0))
