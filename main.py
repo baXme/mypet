@@ -374,6 +374,13 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.mode = "Main"
+            if self.mode == "Main":
+                for button in self.buttons:
+                    button.is_clck(event)
+            elif self.mode == "Clouth_menu":
+                self.clouthes_menu.is_clck(event)
+            elif self.mode == "Food menu":
+                self.clouthes_menu.is_clck(event)
 
 
     def increase_money(self):
@@ -384,14 +391,15 @@ class Game:
                 self.money -= cost
 
     def update(self):
-        self.eat.update()
-        self.clouth.update()
-        self.play.update()
-        self.upgrade_button.update()
-        self.clouthes_menu.update()
-        self.food_menu.update()
-        self.mini_game.update()
-
+        if self.mode == "Clouth_menu":
+            self.clouthes_menu.update()
+        elif self.mode == "Food menu":
+            self.food_menu.update()
+        elif self.mode == "Mini game":
+            self.mini_game.update()
+        else:
+            for button in self.buttons:
+                button.update()
     def draw(self):
         for button in self.buttons:
             button.draw(self.screen)
