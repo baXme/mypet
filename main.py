@@ -1,3 +1,4 @@
+import json
 import random
 
 import pygame as pg
@@ -66,15 +67,15 @@ class Button:
         elif event.type == pg.MOUSEBUTTONUP and event.button == 1:
             self.is_pressed = False
 class Item:
-    def __init__(self, name, price, file):
+    def __init__(self, name, price, file, is_bought, is_using ):
         self.price = price
         self.name = name
-        self.is_bought = False
-        self.is_using = False
+        self.is_bought = is_bought
+        self.is_using = is_using
         self.image = load1(file, 310 // 1.7, 500 // 1.7)
         self.full_image = load1(file, 310, 500)
 class Cmenu:
-    def __init__(self, game):
+    def __init__(self, game, data):
         self.game = game
         self.menu = load1("images/menu/menu_page.png", SCREEN_WIDTH, SCREEN_HEIGHT)
         self.botton_label_off = load1("images/menu/bottom_label_off.png", SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -82,11 +83,10 @@ class Cmenu:
         self.top_label_off = load1("images/menu/top_label_off.png", SCREEN_WIDTH, SCREEN_HEIGHT)
         self.top_label_on = load1("images/menu/top_label_on.png", SCREEN_WIDTH, SCREEN_HEIGHT)
 
-        self.items =[Item("Cиния футболка", 10, "images/items/blue t-shirt.png"),
-                     Item("Ботинки", 50, "images/items/boots.png")
+        self.items =[]
+        for item in data:
+            self.items.append(Item(*item.values()))
 
-
-        ]
         self.current_item = 0
         self.item_rect = self.items[0].image.get_rect()
         self.item_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
@@ -279,7 +279,7 @@ class Mini_game:
         hits = pg.sprite.spritecollide(self.dog, self.toys, True, pg.sprite.collide_rect_ratio(0.6))
         self.score += len(hits)
         if pg.time.get_ticks() - self.start_time > self.interval:
-            self.game.happines += int(self.score // 2)
+            self.game.happines += int(self.score)
             self.game.mode = "Main"
 
     def draw(self, screen):
@@ -290,6 +290,8 @@ class Mini_game:
         self.toys.draw(screen)
 class Game:
     def __init__(self):
+        with open("save.json", encoding="utf-8") as f:
+            data = json.load(f)
         self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pg.display.set_caption("Виртуальный питомец")
         self.clock = pg.time.Clock()
@@ -299,18 +301,20 @@ class Game:
         self.satiety_image = load1("images/satiety.png", icon_size, icon_size)
         self.health_image = load1("images/health.png", icon_size, icon_size)
         self.money_image = load1("images/money.png", icon_size, icon_size)
-        self.happines = 100
-        self.satiety = 100
-        self.health = 100
-        self.money = 1000
+        self.happines = data["happines"]
+        self.satiety = data["satiety"]
+        self.health = data["health"]
+        self.money = data["money"]
         self.mode = "Main"
         print(self.mode)
-        self.coins_per_second = 1
+        self.coins_per_second = data["coins_per_second"]
         self.mini_game = Mini_game(self)
         self.fps = 100
         self.clock = pg.time.Clock()
 
-        self.costs_of_upgrade = {100: False, 1000: False, 5000: False, 10000: False}
+        self.costs_of_upgrade = {}
+        for key, value in data["costs_of_upgrade"].items():
+            self.costs_of_upgrade[int(key)] = value
         self.button_x = SCREEN_WIDTH - pad - BUTTON_WIDTH
         self.eat = Button("Поесть", self.button_x, 100, width=BUTTON_WIDTH, height=BUTTON_HEIGHT,
                           func=self.food_menu_on)
@@ -322,7 +326,7 @@ class Game:
                                      width=BUTTON_WIDTH // 3, height=BUTTON_HEIGHT // 3,
                                      text_font=mini_font,
                                      func=self.increase_money)
-        self.clouthes_menu = Cmenu(self)
+        self.clouthes_menu = Cmenu(self, data["clouthes"])
         self.food_menu = Fmenu(self)
 
         self.buttons = [self.upgrade_button, self.play, self.clouth, self.eat]
@@ -361,26 +365,21 @@ class Game:
                     self.happines -= 1
                 else:
                     self.health -= 1
-            self.eat.is_clck(event)
-            self.clouth.is_clck(event)
-            self.play.is_clck(event)
-            self.upgrade_button.is_clck(event)
-            for button in self.buttons:
-                button.is_clck(event)
-            self.clouthes_menu.is_clck(event)
-            self.food_menu.is_clck(event)
-            if event.type == pg.MOUSEBUTTONDOWN:
-                self.money += 1
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
-                    self.mode = "Main"
             if self.mode == "Main":
                 for button in self.buttons:
                     button.is_clck(event)
             elif self.mode == "Clouth_menu":
                 self.clouthes_menu.is_clck(event)
             elif self.mode == "Food menu":
-                self.clouthes_menu.is_clck(event)
+                self.food_menu.is_clck(event)
+            if event.type == pg.MOUSEBUTTONDOWN:
+                self.money += 1
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    self.mode = "Main"
+
+
+
 
 
     def increase_money(self):
@@ -418,10 +417,7 @@ class Game:
         self.screen.blit(text_render(self.satiety), (pad + icon_size, 165))
         self.screen.blit(text_render(self.money), (SCREEN_WIDTH - icon_size + 35, pad * 6))
 
-        self.eat.draw(self.screen)
-        self.clouth.draw(self.screen)
-        self.play.draw(self.screen)
-        self.upgrade_button.draw(self.screen)
+
         for item in  self.clouthes_menu.items:
             if item.is_using:
                 self.screen.blit(item.full_image, (SCREEN_WIDTH // 2 - 350 // 2,100))
