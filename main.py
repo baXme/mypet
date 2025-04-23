@@ -280,7 +280,7 @@ class Mini_game:
         hits = pg.sprite.spritecollide(self.dog, self.toys, True, pg.sprite.collide_rect_ratio(0.6))
         self.score += len(hits)
         if pg.time.get_ticks() - self.start_time > self.interval:
-            self.game.happines += int(self.score)
+            self.game.happiness += int(self.score)
             self.game.mode = "Main"
 
     def draw(self, screen):
@@ -297,12 +297,12 @@ class Game:
         pg.display.set_caption("Виртуальный питомец")
         self.clock = pg.time.Clock()
         self.background = load1("images/background.png", SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.happines_image = load1("images/happiness.png", icon_size, icon_size)
+        self.happiness_image = load1("images/happiness.png", icon_size, icon_size)
         self.dog_image = load1("images/dog.png", 310, 500)
         self.satiety_image = load1("images/satiety.png", icon_size, icon_size)
         self.health_image = load1("images/health.png", icon_size, icon_size)
         self.money_image = load1("images/money.png", icon_size, icon_size)
-        self.happines = data["happines"]
+        self.happiness = data["happiness"]
         self.satiety = data["satiety"]
         self.health = data["health"]
         self.money = data["money"]
@@ -327,7 +327,7 @@ class Game:
                                      width=BUTTON_WIDTH // 3, height=BUTTON_HEIGHT // 3,
                                      text_font=mini_font,
                                      func=self.increase_money)
-        self.clouthes_menu = Cmenu(self, data["clouthes"])
+        self.clouthes_menu = Cmenu(self, data["clothes"])
         self.food_menu = Fmenu(self)
 
         self.buttons = [self.upgrade_button, self.play, self.clouth, self.eat]
@@ -354,7 +354,7 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 if self.mode == "Game over":
-                   data = {"happines": 100,
+                   data = {"happiness": 100,
                     "satiety": 100,
                     "health": 100,
                     "money": 1000,
@@ -385,7 +385,7 @@ class Game:
 
                     }
                 else:
-                    data = {"happines" : self.happines,
+                    data = {"happiness" : self.happiness,
                             "satiety": self.satiety,
                             "health": self.health,
                             "money": self.money,
@@ -400,7 +400,7 @@ class Game:
 
                     }
                 for item in self.clouthes_menu.items:
-                    data["clouthes"].append({'name' : item.name,
+                    data["clothes"].append({'name' : item.name,
                                              'price' : item.price,
                                              'image' : item.image,
                                              'is_using' : item.is_using,
@@ -421,7 +421,7 @@ class Game:
                 if chance <= 5:
                     self.satiety -= 1
                 elif 5 < chance <= 9:
-                    self.happines -= 1
+                    self.happiness -= 1
                 else:
                     self.health -= 1
             if self.mode == "Main":
@@ -449,7 +449,9 @@ class Game:
                 self.money -= cost
 
     def update(self):
-        if self.mode == "Clouth_menu":
+        if self.happiness == 0 or self.satiety == 0 or self.health == 0:
+            self.mode == "Game over"
+        elif self.mode == "Clouth_menu":
             self.clouthes_menu.update()
         elif self.mode == "Food menu":
             self.food_menu.update()
@@ -458,8 +460,7 @@ class Game:
         else:
             for button in self.buttons:
                 button.update()
-        if self.happines == 0 or self.satiety == 0 or self.health == 0:
-            self.mode == "Game over"
+
     def draw(self):
         for button in self.buttons:
             button.draw(self.screen)
@@ -468,12 +469,12 @@ class Game:
         if self.mode == "Food menu":
             self.food_menu.draw(self.screen)
         self.screen.blit(self.background, (0, 0))
-        self.screen.blit(self.happines_image, (pad, pad))
+        self.screen.blit(self.happiness_image, (pad, pad))
         self.screen.blit(self.dog_image, (275, 100))
         self.screen.blit(self.health_image, (pad, 70))
         self.screen.blit(self.satiety_image, (pad, 140))
         self.screen.blit(self.money_image, (SCREEN_WIDTH - icon_size - pad * 9, pad))
-        self.screen.blit(text_render(self.happines), (pad + icon_size, pad * 6))
+        self.screen.blit(text_render(self.happiness), (pad + icon_size, pad * 6))
         self.screen.blit(text_render(self.health), (pad + icon_size, 95))
         self.screen.blit(text_render(self.satiety), (pad + icon_size, 165))
         self.screen.blit(text_render(self.money), (SCREEN_WIDTH - icon_size + 35, pad * 6))
@@ -501,7 +502,7 @@ class Game:
         if self.mode == "Game over":
             text = font_maxi.render("YOU DIED", True, "red")
             text_rect = text.get_rect(center=(SCREEN_WIDTH //2, SCREEN_HEIGHT //2))
-            self.screen.blit(text, text_rect)
+            self.screen.blit(text, (0, 0))
 
 
 
