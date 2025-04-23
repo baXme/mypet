@@ -15,6 +15,7 @@ icon_size = 80
 pad = 5
 font = pg.font.Font(None, 40)
 mini_font = pg.font.Font(None, 15)
+font_maxi = pg.font.Font(None, 200)
 fps = 600
 
 
@@ -352,6 +353,64 @@ class Game:
     def event(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
+                if self.mode == "Game over":
+                   data = {"happines": 100,
+                    "satiety": 100,
+                    "health": 100,
+                    "money": 1000,
+                    "coins_per_second": 1,
+                    "costs_of_upgrade": {
+                        "100": False,
+                        "1000": False,
+                        "5000": False,
+                        "10000": False
+                    },
+                    "clouthes": [
+                            {
+                            "name": "синия футболка",
+                            "price": 10,
+                            "image": "images/items/blue t-shirt.png",
+                            "is_bought": False,
+                            "is_using": False
+                            },
+                            {"name": "Ботинки",
+                             "price": 50,
+                             "image": "images/items/boots.png",
+                             "is_bought": False,
+                             "is_using": False
+
+                             }
+
+                        ]
+
+                    }
+                else:
+                    data = {"happines" : self.happines,
+                            "satiety": self.satiety,
+                            "health": self.health,
+                            "money": self.money,
+                            "coins_per_second": self.coins_per_second,
+                            "costs_of_upgrade": {
+                                "100": self.costs_of_upgrade[100],
+                                "1000":self.costs_of_upgrade[1000],
+                                "5000": self.costs_of_upgrade[5000],
+                                "10000": self.costs_of_upgrade[10000]
+                            },
+                    'clouthes' : []
+
+                    }
+                for item in self.clouthes_menu.items:
+                    data["clouthes"].append({'name' : item.name,
+                                             'price' : item.price,
+                                             'image' : item.image,
+                                             'is_using' : item.is_using,
+                                             'is_bought': item.is_bought
+
+
+
+                    })
+                with open("save.json", 'w', encoding='utf-8') as  f:
+                    json.dump(data, f, ensure_ascii=False)
                 pg.quit()
                 exit()
 
@@ -399,6 +458,8 @@ class Game:
         else:
             for button in self.buttons:
                 button.update()
+        if self.happines == 0 or self.satiety == 0 or self.health == 0:
+            self.mode == "Game over"
     def draw(self):
         for button in self.buttons:
             button.draw(self.screen)
@@ -437,7 +498,10 @@ class Game:
             self.food_menu.end_button.draw(self.screen)
         if self.mode == "Mini game":
             self.mini_game.draw(self.screen)
-
+        if self.mode == "Game over":
+            text = font_maxi.render("YOU DIED", True, "red")
+            text_rect = text.get_rect(center=(SCREEN_WIDTH //2, SCREEN_HEIGHT //2))
+            self.screen.blit(text, text_rect)
 
 
 
