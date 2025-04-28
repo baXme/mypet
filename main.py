@@ -502,7 +502,7 @@ class Game:
         if self.mode == "Game over":
             text = font_maxi.render("YOU DIED", True, "red")
             text_rect = text.get_rect(center=(SCREEN_WIDTH //2, SCREEN_HEIGHT //2))
-            self.screen.blit(text, (0, 0))
+            self.screen.blit(text, (250, 250))
 
 
 
