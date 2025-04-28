@@ -402,12 +402,12 @@ class Game:
                     'clothes' : []
 
                     }
-                for item in self.clouthes_menu.items:
-                    data["clothes"].append({'name' : item.name,
-                                             'price' : item.price,
-                                             'image' : item.file,
-                                             'is_using' : item.is_using,
-                                             'is_bought': item.is_bought
+                    for item in self.clouthes_menu.items:
+                        data["clothes"].append({'name' : item.name,
+                                                'price' : item.price,
+                                                'image' : item.file,
+                                                'is_using' : item.is_using,
+                                                'is_bought': item.is_bought
 
 
 
