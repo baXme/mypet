@@ -71,6 +71,7 @@ class Item:
     def __init__(self, name, price, file, is_bought, is_using ):
         self.price = price
         self.name = name
+        self.file = file
         self.is_bought = is_bought
         self.is_using = is_using
         self.image = load1(file, 310 // 1.7, 500 // 1.7)
@@ -162,13 +163,15 @@ class Fmenu:
         self.items =[Food("Мясо", "images/food/dog food.png", 10, 10),
                      Food("Корм", "images/food/meat.png", 15, 20),
                      Food("Элит", "images/food/dog food elite.png", 15, 40, medicene=40),
-                     Food("Элит", "images/food/medicine.png", 0, 50, medicene=40)
+                     Food("Мед", "images/food/medicine.png", 0, 50, medicene=40)
 
 
         ]
+
+
         self.current_item = 0
         self.item_rect = self.items[0].image.get_rect()
-        self.item_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        self.item_rect.center = (250, 250)
         self.next_button = Button("Вперёд", 125, 425,
                                   width=int(BUTTON_WIDTH // 2), height=int(BUTTON_HEIGHT // 2),
                                   func=self.to_next)
@@ -365,7 +368,7 @@ class Game:
                         "5000": False,
                         "10000": False
                     },
-                    "clouthes": [
+                    "clothes": [
                             {
                             "name": "синия футболка",
                             "price": 10,
@@ -396,13 +399,13 @@ class Game:
                                 "5000": self.costs_of_upgrade[5000],
                                 "10000": self.costs_of_upgrade[10000]
                             },
-                    'clouthes' : []
+                    'clothes' : []
 
                     }
                 for item in self.clouthes_menu.items:
                     data["clothes"].append({'name' : item.name,
                                              'price' : item.price,
-                                             'image' : item.image,
+                                             'image' : item.file,
                                              'is_using' : item.is_using,
                                              'is_bought': item.is_bought
 
@@ -450,7 +453,7 @@ class Game:
 
     def update(self):
         if self.happiness == 0 or self.satiety == 0 or self.health == 0:
-            self.mode == "Game over"
+            self.mode = "Game over"
         elif self.mode == "Clouth_menu":
             self.clouthes_menu.update()
         elif self.mode == "Food menu":
@@ -502,7 +505,7 @@ class Game:
         if self.mode == "Game over":
             text = font_maxi.render("YOU DIED", True, "red")
             text_rect = text.get_rect(center=(SCREEN_WIDTH //2, SCREEN_HEIGHT //2))
-            self.screen.blit(text, (250, 250))
+            self.screen.blit(text, text_rect)
 
 
 
